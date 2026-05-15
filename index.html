@@ -1,221 +1,640 @@
-<!-- Alert Banner -->
-<div id="alert-banner" style="
-  background: #007bff;
-  color: white;
-  padding: 12px 48px 12px 16px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 1rem;
-  border-bottom: 3px solid #0056b3;
-  cursor: pointer;
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  min-height: 44px;
-  box-sizing: border-box;
-  transition: background-color 0.4s ease;
-">
-  <span style="flex-shrink:0; margin-top:2px;">⚠️</span>
-  <div style="flex:1; min-width:0;">
-    <span id="alert-headline" style="font-weight:600; display:block; word-wrap:break-word; white-space:normal; line-height:1.4;"></span>
-    <span id="alert-location" style="font-size:0.8rem; opacity:0.85; display:block; margin-top:2px;"></span>
+<!-- =========================
+ CLAYTON'S WEATHER ALERT SYSTEM
+ Modernized App Style
+========================= -->
+
+<style>
+:root{
+  --cw-blue:#0b3c6d;
+  --cw-blue-light:#1f6fb2;
+  --cw-card:#10263d;
+  --cw-text:#ffffff;
+  --cw-muted:rgba(255,255,255,0.72);
+
+  --radius:22px;
+  --transition:0.3s ease;
+}
+
+/* =========================
+ ALERT BANNER
+========================= */
+
+#alert-banner{
+  position:relative;
+
+  width:100%;
+  overflow:hidden;
+
+  display:flex;
+  align-items:center;
+  gap:14px;
+
+  padding:16px 18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(11,60,109,0.98),
+      rgba(16,38,61,0.98)
+    );
+
+  border:1px solid rgba(255,255,255,0.08);
+
+  border-radius:20px;
+
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+
+  color:white;
+
+  cursor:pointer;
+
+  transition:all var(--transition);
+}
+
+/* Animated glow */
+#alert-banner::before{
+  content:"";
+
+  position:absolute;
+  inset:-40%;
+
+  background:
+    conic-gradient(
+      transparent,
+      rgba(255,255,255,0.08),
+      transparent 30%
+    );
+
+  animation:rotateGlow 8s linear infinite;
+}
+
+@keyframes rotateGlow{
+  from{
+    transform:rotate(0deg);
+  }
+  to{
+    transform:rotate(360deg);
+  }
+}
+
+#alert-banner:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    0 14px 35px rgba(0,0,0,0.45);
+}
+
+.alert-icon{
+  position:relative;
+  z-index:2;
+
+  width:46px;
+  height:46px;
+
+  border-radius:14px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:1.2rem;
+
+  background:rgba(255,255,255,0.12);
+
+  flex-shrink:0;
+}
+
+.alert-content{
+  position:relative;
+  z-index:2;
+
+  flex:1;
+  min-width:0;
+}
+
+#alert-headline{
+  font-size:1rem;
+  font-weight:700;
+  line-height:1.4;
+
+  display:block;
+}
+
+#alert-location{
+  display:block;
+
+  margin-top:4px;
+
+  font-size:0.82rem;
+  color:var(--cw-muted);
+}
+
+.alert-pill{
+  position:relative;
+  z-index:2;
+
+  font-size:0.74rem;
+  font-weight:700;
+
+  padding:7px 12px;
+
+  border-radius:999px;
+
+  background:rgba(255,255,255,0.12);
+
+  white-space:nowrap;
+
+  backdrop-filter:blur(8px);
+}
+
+/* =========================
+ MODAL
+========================= */
+
+#alert-modal{
+  position:fixed;
+  inset:0;
+
+  display:none;
+  justify-content:center;
+  align-items:center;
+
+  background:rgba(0,0,0,0.7);
+
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+
+  z-index:9999;
+
+  padding:20px;
+}
+
+.alert-modal-card{
+  width:100%;
+  max-width:700px;
+
+  max-height:90vh;
+
+  overflow:hidden;
+
+  border-radius:28px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #11283f,
+      #0d1f31
+    );
+
+  border:1px solid rgba(255,255,255,0.08);
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.55);
+
+  color:white;
+
+  display:flex;
+  flex-direction:column;
+
+  animation:modalIn 0.25s ease;
+}
+
+@keyframes modalIn{
+  from{
+    opacity:0;
+    transform:translateY(15px) scale(0.97);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+}
+
+/* Header */
+.modal-header{
+  padding:22px 24px 18px;
+
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+
+.modal-top{
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  margin-bottom:10px;
+}
+
+#modal-severity-badge{
+  padding:6px 12px;
+
+  border-radius:999px;
+
+  font-size:0.72rem;
+  font-weight:800;
+
+  text-transform:uppercase;
+  letter-spacing:0.06em;
+}
+
+#modal-counter{
+  font-size:0.78rem;
+  color:rgba(255,255,255,0.6);
+}
+
+#modal-title{
+  font-size:1.25rem;
+  line-height:1.45;
+  font-weight:700;
+}
+
+/* Body */
+.modal-body{
+  padding:22px 24px;
+
+  overflow-y:auto;
+
+  flex:1;
+}
+
+#modal-location{
+  font-size:0.85rem;
+  color:rgba(255,255,255,0.65);
+
+  margin-bottom:16px;
+}
+
+#modal-desc{
+  font-size:0.95rem;
+  line-height:1.75;
+
+  color:rgba(255,255,255,0.9);
+
+  white-space:pre-wrap;
+}
+
+/* Link button */
+#modal-link{
+  margin-top:22px;
+
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+
+  padding:12px 18px;
+
+  border-radius:14px;
+
+  text-decoration:none;
+
+  color:white;
+  font-weight:700;
+  font-size:0.9rem;
+
+  transition:var(--transition);
+
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.25);
+}
+
+#modal-link:hover{
+  transform:translateY(-1px);
+}
+
+/* Footer */
+.modal-footer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  padding:18px 24px;
+
+  border-top:1px solid rgba(255,255,255,0.08);
+}
+
+.modal-btn{
+  border:none;
+
+  background:rgba(255,255,255,0.08);
+
+  color:white;
+
+  padding:10px 16px;
+
+  border-radius:14px;
+
+  cursor:pointer;
+
+  font-weight:700;
+
+  transition:var(--transition);
+}
+
+.modal-btn:hover{
+  background:rgba(255,255,255,0.14);
+}
+
+#modal-nav-label{
+  color:rgba(255,255,255,0.6);
+  font-size:0.82rem;
+}
+
+.close-btn{
+  position:absolute;
+  top:18px;
+  right:20px;
+
+  width:38px;
+  height:38px;
+
+  border:none;
+
+  border-radius:12px;
+
+  background:rgba(255,255,255,0.08);
+
+  color:white;
+
+  font-size:1.2rem;
+
+  cursor:pointer;
+}
+
+/* Mobile */
+@media (max-width:600px){
+
+  #alert-banner{
+    padding:14px;
+    border-radius:18px;
+  }
+
+  .alert-pill{
+    display:none;
+  }
+
+  #modal-title{
+    font-size:1.05rem;
+  }
+
+  .alert-modal-card{
+    border-radius:22px;
+  }
+}
+</style>
+
+<!-- =========================
+ ALERT BANNER
+========================= -->
+
+<div id="alert-banner">
+
+  <div class="alert-icon">
+    ⚠️
   </div>
-  <span style="
-    position:absolute;
-    right:12px;
-    top:50%;
-    transform:translateY(-50%);
-    font-size:0.75rem;
-    opacity:0.85;
-    background:rgba(255,255,255,0.2);
-    padding:2px 8px;
-    border-radius:4px;
-    white-space:nowrap;
-    font-weight:500;
-  ">Tap for details</span>
+
+  <div class="alert-content">
+    <span id="alert-headline"></span>
+    <span id="alert-location"></span>
+  </div>
+
+  <div class="alert-pill">
+    LIVE ALERT
+  </div>
+
 </div>
 
-<!-- Alert Modal -->
-<div id="alert-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
-  <div style="
-    background:white;
-    max-width:640px;
-    width:90%;
-    border-radius:10px;
-    box-shadow:0 8px 32px rgba(0,0,0,0.3);
-    position:relative;
-    overflow:hidden;
-    max-height:90vh;
-    display:flex;
-    flex-direction:column;
-  ">
-    <!-- Modal Header -->
-    <div id="modal-header" style="padding:16px 20px; border-bottom:1px solid #eee; flex-shrink:0;">
-      <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
-        <span id="modal-severity-badge" style="font-size:0.7rem; font-weight:700; padding:3px 10px; border-radius:20px; text-transform:uppercase; letter-spacing:0.05em; color:white;"></span>
-        <span id="modal-counter" style="font-size:0.75rem; color:#999;"></span>
+<!-- =========================
+ ALERT MODAL
+========================= -->
+
+<div id="alert-modal">
+
+  <div class="alert-modal-card">
+
+    <button class="close-btn" onclick="closeModal()">
+      ✕
+    </button>
+
+    <div class="modal-header">
+
+      <div class="modal-top">
+        <span id="modal-severity-badge"></span>
+        <span id="modal-counter"></span>
       </div>
-      <h2 id="modal-title" style="margin:0; font-size:1.1rem; font-weight:700; color:#222; line-height:1.4;"></h2>
+
+      <div id="modal-title"></div>
+
     </div>
-    <!-- Modal Body (scrollable) -->
-    <div style="padding:16px 20px; overflow-y:auto; flex:1;">
-      <p id="modal-location" style="font-size:0.82rem; color:#888; margin:0 0 12px 0; font-style:italic;">📍 <span id="modal-location-text"></span></p>
-      <p id="modal-desc" style="font-size:0.93rem; color:#333; line-height:1.65; margin:0 0 16px 0; white-space:pre-wrap;"></p>
-      <a id="modal-link" href="#" target="_blank" style="
-        display:inline-flex;
-        align-items:center;
-        gap:6px;
-        color:white;
-        background:#007bff;
-        text-decoration:none;
-        padding:8px 16px;
-        border-radius:6px;
-        font-size:0.88rem;
-        font-weight:600;
-      ">🔗 View Full NWS Alert</a>
+
+    <div class="modal-body">
+
+      <div id="modal-location">
+        📍 <span id="modal-location-text"></span>
+      </div>
+
+      <div id="modal-desc"></div>
+
+      <a id="modal-link" href="#" target="_blank">
+        🔗 View Full NWS Alert
+      </a>
+
     </div>
-    <!-- Modal Nav Footer -->
-    <div style="padding:12px 20px; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; background:#fafafa;">
-      <button onclick="navigateModal(-1)" style="background:#e9ecef; border:none; padding:7px 14px; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">← Prev</button>
-      <span id="modal-nav-label" style="font-size:0.8rem; color:#888;"></span>
-      <button onclick="navigateModal(1)" style="background:#e9ecef; border:none; padding:7px 14px; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">Next →</button>
+
+    <div class="modal-footer">
+
+      <button class="modal-btn" onclick="navigateModal(-1)">
+        ← Previous
+      </button>
+
+      <span id="modal-nav-label"></span>
+
+      <button class="modal-btn" onclick="navigateModal(1)">
+        Next →
+      </button>
+
     </div>
-    <button onclick="closeModal()" style="position:absolute; top:10px; right:12px; background:none; border:none; font-size:22px; color:#aaa; cursor:pointer; line-height:1;">&times;</button>
+
   </div>
+
 </div>
 
 <script>
-  const alertBanner   = document.getElementById('alert-banner');
-  const alertHeadline = document.getElementById('alert-headline');
-  const alertLocation = document.getElementById('alert-location');
+const alertBanner   = document.getElementById('alert-banner');
+const alertHeadline = document.getElementById('alert-headline');
+const alertLocation = document.getElementById('alert-location');
 
-  const modal           = document.getElementById('alert-modal');
-  const modalHeader     = document.getElementById('modal-header');
-  const modalTitle      = document.getElementById('modal-title');
-  const modalDesc       = document.getElementById('modal-desc');
-  const modalLocationEl = document.getElementById('modal-location-text');
-  const modalLink       = document.getElementById('modal-link');
-  const modalBadge      = document.getElementById('modal-severity-badge');
-  const modalCounter    = document.getElementById('modal-counter');
-  const modalNavLabel   = document.getElementById('modal-nav-label');
+const modal           = document.getElementById('alert-modal');
+const modalTitle      = document.getElementById('modal-title');
+const modalDesc       = document.getElementById('modal-desc');
+const modalLocationEl = document.getElementById('modal-location-text');
+const modalLink       = document.getElementById('modal-link');
+const modalBadge      = document.getElementById('modal-severity-badge');
+const modalCounter    = document.getElementById('modal-counter');
+const modalNavLabel   = document.getElementById('modal-nav-label');
 
-  let alerts = [];
-  let bannerIndex = 0;
-  let modalIndex  = 0;
+let alerts = [];
+let bannerIndex = 0;
+let modalIndex = 0;
 
-  const severityColors = {
-    'Severe':    '#dc3545',
-    'Extreme':   '#9b0000',
-    'Moderate':  '#fd7e14',
-    'Minor':     '#d4a000',
-    'Advisory':  '#17a2b8',
-    'Watch':     '#fd7e14',
-    'Emergency': '#dc3545',
-    'Unknown':   '#007bff'
-  };
+const severityColors = {
+  Severe:    '#ff4d4d',
+  Extreme:   '#ff1f1f',
+  Moderate:  '#ff9f43',
+  Minor:     '#feca57',
+  Advisory:  '#48dbfb',
+  Watch:     '#ff9f43',
+  Emergency: '#ff1f1f',
+  Unknown:   '#1f6fb2'
+};
 
-  async function fetchAlerts() {
-    try {
-      const response = await fetch("https://api.weather.gov/alerts/active?area=TX");
-      const data     = await response.json();
+async function fetchAlerts(){
 
-      if (!data.features || !data.features.length) {
-        alerts = [{
-          headline:    "No active alerts for Texas at this time.",
-          severity:    'Unknown',
-          area:        "Texas",
-          description: "There are no current active alerts from the National Weather Service.",
-          link:        "#"
-        }];
-      } else {
-        alerts = data.features.map(f => {
-          const p = f.properties;
-          return {
-            headline:    p.headline || p.event,
-            severity:    p.severity || 'Unknown',
-            area:        p.areaDesc || 'Unknown Area',
-            description: p.description || 'No description provided.',
-            link:        p.uri || "#"
-          };
-        });
-      }
+  try{
 
-      bannerIndex = 0;
-      updateBanner();
-    } catch (err) {
+    const response = await fetch(
+      "https://api.weather.gov/alerts/active?area=TX"
+    );
+
+    const data = await response.json();
+
+    if(!data.features || !data.features.length){
+
       alerts = [{
-        headline:    "Error loading alerts.",
-        severity:    'Unknown',
-        area:        "N/A",
-        description: "Unable to fetch alerts at this time.",
-        link:        "#"
+        headline:"No active alerts for Texas.",
+        severity:"Unknown",
+        area:"Texas",
+        description:"There are currently no active National Weather Service alerts for Texas.",
+        link:"#"
       }];
-      bannerIndex = 0;
-      updateBanner();
-      console.error(err);
+
+    }else{
+
+      alerts = data.features.map(f => {
+
+        const p = f.properties;
+
+        return{
+          headline:p.headline || p.event,
+          severity:p.severity || "Unknown",
+          area:p.areaDesc || "Unknown Area",
+          description:p.description || "No description available.",
+          link:p.uri || "#"
+        };
+
+      });
+
     }
+
+    bannerIndex = 0;
+    updateBanner();
+
+  }catch(err){
+
+    console.error(err);
+
+    alerts = [{
+      headline:"Unable to load alerts.",
+      severity:"Unknown",
+      area:"System Error",
+      description:"The alert service could not be reached.",
+      link:"#"
+    }];
+
+    updateBanner();
   }
+}
 
-  function updateBanner() {
-    if (!alerts.length) return;
-    const alert = alerts[bannerIndex];
-    const color = severityColors[alert.severity] || severityColors['Unknown'];
+function updateBanner(){
 
-    alertBanner.style.backgroundColor = color;
-    alertBanner.style.borderBottomColor = darken(color);
-    alertHeadline.textContent = alert.headline;
-    alertLocation.textContent = alert.area;
+  if(!alerts.length) return;
 
-    bannerIndex = (bannerIndex + 1) % alerts.length;
+  const alert = alerts[bannerIndex];
+
+  const color =
+    severityColors[alert.severity] ||
+    severityColors.Unknown;
+
+  alertBanner.style.boxShadow =
+    `0 10px 30px ${color}25`;
+
+  alertHeadline.textContent = alert.headline;
+  alertLocation.textContent = alert.area;
+
+  bannerIndex =
+    (bannerIndex + 1) % alerts.length;
+}
+
+function showModal(){
+
+  modalIndex =
+    (bannerIndex - 1 + alerts.length) %
+    alerts.length;
+
+  renderModal();
+
+  modal.style.display = "flex";
+}
+
+function renderModal(){
+
+  const alert = alerts[modalIndex];
+
+  const color =
+    severityColors[alert.severity] ||
+    severityColors.Unknown;
+
+  modalBadge.textContent = alert.severity;
+  modalBadge.style.background = color;
+
+  modalTitle.textContent = alert.headline;
+
+  modalDesc.textContent = alert.description;
+
+  modalLocationEl.textContent = alert.area;
+
+  modalLink.href = alert.link;
+  modalLink.style.background = color;
+
+  modalCounter.textContent =
+    alerts.length > 1
+      ? `Alert ${modalIndex + 1} of ${alerts.length}`
+      : "";
+
+  modalNavLabel.textContent =
+    `${modalIndex + 1} / ${alerts.length}`;
+}
+
+function navigateModal(dir){
+
+  modalIndex =
+    (modalIndex + dir + alerts.length) %
+    alerts.length;
+
+  renderModal();
+}
+
+function closeModal(){
+  modal.style.display = "none";
+}
+
+modal.addEventListener("click", e => {
+  if(e.target === modal){
+    closeModal();
   }
+});
 
-  // Slightly darken a hex color for the border
-  function darken(hex) {
-    const n = parseInt(hex.replace('#',''), 16);
-    const r = Math.max(0, (n >> 16) - 40);
-    const g = Math.max(0, ((n >> 8) & 0xff) - 40);
-    const b = Math.max(0, (n & 0xff) - 40);
-    return `rgb(${r},${g},${b})`;
-  }
+alertBanner.addEventListener(
+  "click",
+  showModal
+);
 
-  function showModal() {
-    // Show the alert currently displayed on the banner
-    modalIndex = (bannerIndex - 1 + alerts.length) % alerts.length;
-    renderModal();
-    modal.style.display = "flex";
-  }
+setInterval(updateBanner, 7000);
 
-  function renderModal() {
-    const alert = alerts[modalIndex];
-    const color = severityColors[alert.severity] || severityColors['Unknown'];
+setInterval(fetchAlerts, 600000);
 
-    modalHeader.style.borderTop = `4px solid ${color}`;
-    modalBadge.textContent      = alert.severity;
-    modalBadge.style.background = color;
-    modalCounter.textContent    = alerts.length > 1 ? `Alert ${modalIndex + 1} of ${alerts.length}` : '';
-    modalTitle.textContent      = alert.headline;
-    modalDesc.textContent       = alert.description;
-    modalLocationEl.textContent = alert.area;
-    modalLink.href              = alert.link;
-    modalLink.style.background  = color;
-    modalNavLabel.textContent   = `${modalIndex + 1} / ${alerts.length}`;
-  }
-
-  function navigateModal(dir) {
-    modalIndex = (modalIndex + dir + alerts.length) % alerts.length;
-    renderModal();
-  }
-
-  function closeModal() {
-    modal.style.display = "none";
-  }
-
-  // Close modal on backdrop click
-  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-
-  alertBanner.addEventListener('click', showModal);
-
-  setInterval(updateBanner, 7000);
-  setInterval(fetchAlerts, 10 * 60 * 1000);
-  fetchAlerts();
+fetchAlerts();
 </script>
